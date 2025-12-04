@@ -43,7 +43,7 @@ exports.initializePayment = async (req, res) => {
       amount: totalPrice,
       currency: "NGN",
       redirect_url:
-        process.env.FRONTEND_URL || "http://localhost:5000/verifypayment",
+        process.env.FRONTEND_URL,
       // redirect_url: 'https://your-app.com/payment-success', always remember to change
 
       customer: {
@@ -188,7 +188,8 @@ const response = await fetch(
         price: item.Product.price,
         quantity: item.quantity,
         total: item.quantity * item.Product.price,
-        ProductId: item.Product.id
+        ProductId: item.Product.id,
+        image: item.Product.image || null
       }))
     })
 

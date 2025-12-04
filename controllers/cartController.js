@@ -255,6 +255,41 @@ exports.deleteCart = async (req, res) => {
 };
 
 
+/* -------------------- CLEAR CART -------------------- */
+exports.clearCart = async (req, res) => {
+  const { userId } = req.params;
+  const parsedUserId = Number(userId);
+
+  try {
+    const cart = await prisma.cart.findUnique({
+      where: { userId: parsedUserId }
+    });
+
+    if (!cart) {
+      return res.status(400).json({
+        success: false,
+        message: "Cart not found"
+      });
+    }
+
+    // Delete all items from cart
+    await prisma.productCart.deleteMany({
+      where: { CartId: cart.id }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Cart cleared successfully"
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
 /* -------------------- GET USER CART -------------------- */
 exports.getCart = async (req, res) => {
   const { userId } = req.params;
@@ -264,8 +299,8 @@ exports.getCart = async (req, res) => {
     const cart = await prisma.cart.findUnique({
       where: { userId: parsedUserId },
       include: {
-        productCart: {
-          include: { product: true }
+        ProductCart: {
+          include: { Product: true }
         }
       }
     });
