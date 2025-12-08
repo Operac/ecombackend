@@ -11,12 +11,19 @@ const options = {
     },
     servers: [
       {
-        url: "https://ecombackend-vl7q.onrender.com", // Change to your real server URL
+        url: "https://ecombackend-vl7q.onrender.com",
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        }
+      }
+    }
   },
-
-  // Path where your route files are located
   apis: ["./routers/*.js"],
 };
 

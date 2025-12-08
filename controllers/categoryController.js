@@ -89,8 +89,8 @@ exports.getSingleCategory = async (req, res) => {
 };
 
 exports.updateCategory = async (req, res) => {
-  const { name, id } = req.body;
-  
+  const { name } = req.body;
+  const { id } = req.params; // Get from URL params instead
   const parsedId = parseInt(id);
   try {
     // check if category is existing
@@ -126,8 +126,7 @@ exports.updateCategory = async (req, res) => {
 
 // DELETE
 exports.deleteCategory = async (req, res) => {
-  const { id } = req.body;
-
+  const { id } = req.params; // Get from URL params instead
   const parsedId = parseInt(id);
   try {
     const existingCategory = await prisma.category.findUnique({
