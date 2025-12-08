@@ -7,7 +7,7 @@ const categoryRouter = require("./routers/categoryRouter");
 const productRouter = require("./routers/productRouter");
 const cartRouter = require("./routers/cartRouter");
 const paymentRouter = require("./routers/paymentRouter");
-const { swaggerUi } = require("./swagger/swagger");
+const { swaggerUi, swaggerSpec } = require("./swagger/swagger");
 
 dotenv.config();
 
