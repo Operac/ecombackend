@@ -1,7 +1,9 @@
 const express = require("express")
 const uploads = require("../middlewares/uploads")
-const { registerUser, loginUser } = require("../controllers/userController")
+const { registerUser, loginUser, verifyEmail } = require("../controllers/userController")
 const userRouter = express.Router()
+
+userRouter.get("/verify-email", verifyEmail);
 
 /**
  * @swagger

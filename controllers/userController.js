@@ -3,7 +3,9 @@
 // const bcrypt = require('bcrypt');
 // const { uploadToCloudinary } = require('../utility/uploadtoCloudinary');
 // const { sendVerification } = require("../utility/emailVerification");
-// const { generateToken } = require("../utility/generateToken");
+// const { sendVerification } = require("../utility/emailVerification");
+
+
 
 // exports.registerUser = async (req, res) => {
 //     const { firstName, lastName, email, phone, address, password, confirmpassword } = req.body
@@ -176,7 +178,9 @@ const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 const bcrypt = require('bcrypt');
 const { uploadToCloudinary } = require('../utility/uploadtoCloudinary');
+const { sendVerification } = require("../utility/emailVerification");
 const { generateToken } = require("../utility/generateToken");
+const crypto = require("crypto");
 
 exports.registerUser = async (req, res) => {
     const { firstName, lastName, email, phone, address, password, confirmpassword } = req.body
@@ -207,11 +211,31 @@ exports.registerUser = async (req, res) => {
             imageUrl = await uploadToCloudinary(req.file.buffer, "image", "Users");
         }
 
+        const verificationToken = crypto.randomBytes(32).toString("hex");
+
         const newUser = await prisma.user.create({
-            data: { firstName, lastName, email, phone, address, password: hashedPassword, image: imageUrl }
+            data: { 
+                firstName, 
+                lastName, 
+                email, 
+                phone, 
+                address, 
+                password: hashedPassword, 
+                image: imageUrl,
+                verificationToken 
+            }
         });
 
-        return res.status(201).json({ success: true, message: "User created successfully!", data: newUser });
+        const verificationLink = `https://ecommerce-fashion-delta.vercel.app/verify-email?token=${verificationToken}`;
+        console.log("Verification Link:", verificationLink);
+        try {
+            await sendVerification(newUser.email, verificationLink);
+        } catch (emailError) {
+            console.error("Failed to send verification email:", emailError.message);
+            // Don't fail the registration, just log it. Link is already logged above.
+        }
+
+        return res.status(201).json({ success: true, message: "User created successfully! Please check your email to verify your account.", data: newUser });
 
     } catch (error) {
         return res.status(500).json({ success: false, message: "Server error", error: error.message });
@@ -305,5 +329,36 @@ exports.loginUser = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+exports.verifyEmail = async (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).json({ success: false, message: "Token is required" });
+    }
+
+    try {
+        const user = await prisma.user.findFirst({
+            where: { verificationToken: token }
+        });
+
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid or expired verification token" });
+        }
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                isVerified: true,
+                verificationToken: null
+            }
+        });
+
+        return res.status(200).json({ success: true, message: "Email verified successfully" });
+    } catch (error) {
+        console.error("Verification error:", error);
+        return res.status(500).json({ success: false, message: "Server error during verification" });
     }
 };

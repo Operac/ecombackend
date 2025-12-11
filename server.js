@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+dotenv.config();
 const cors = require("cors");
 
 const userRouter = require("./routers/userRouter");
@@ -8,8 +9,6 @@ const productRouter = require("./routers/productRouter");
 const cartRouter = require("./routers/cartRouter");
 const paymentRouter = require("./routers/paymentRouter");
 const { swaggerUi, swaggerSpec } = require("./swagger/swagger");
-
-dotenv.config();
 
 const app = express();
 

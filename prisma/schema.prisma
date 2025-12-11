@@ -50,6 +50,8 @@ model User {
   role      Role   @default(USER)
   image     String?
   address   String
+  isVerified  Boolean @default(false)
+  verificationToken String?
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

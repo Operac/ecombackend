@@ -100,12 +100,21 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const allProducts = await prisma.product.findMany();
+    const allProducts = await prisma.product.findMany({
+      include: {
+        category: true
+      }
+    });
+
+    const formattedProducts = allProducts.map(product => ({
+      ...product,
+      category: product.category ? product.category.name : null
+    }));
 
     return res.status(200).json({
       success: true,
       message: "Products retrieved successfully!",
-      data: allProducts,
+      data: formattedProducts,
     });
   } catch (error) {
     console.error("getAllProducts error:", error);
