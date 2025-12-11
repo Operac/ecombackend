@@ -8,6 +8,7 @@ const categoryRouter = require("./routers/categoryRouter");
 const productRouter = require("./routers/productRouter");
 const cartRouter = require("./routers/cartRouter");
 const paymentRouter = require("./routers/paymentRouter");
+const wishlistRouter = require("./routers/wishlistRouter");
 const { swaggerUi, swaggerSpec } = require("./swagger/swagger");
 
 const app = express();
@@ -31,6 +32,7 @@ app.use("/", categoryRouter);
 app.use("/", productRouter);
 app.use("/", cartRouter);
 app.use("/", paymentRouter);
+app.use("/", wishlistRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 const port = process.env.PORT || 5000;

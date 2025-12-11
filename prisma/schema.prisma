@@ -37,6 +37,7 @@ model Product {
   category     Category     @relation(fields: [categoryid], references: [id])
   receiptItem  ReceiptItem[]
   productCart  ProductCart[]
+  Wishlist     Wishlist[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }
@@ -59,6 +60,18 @@ model User {
   // profile profile?
   uuid String @unique @default(uuid()) @db.Uuid
   Cart      Cart?
+  Wishlist  Wishlist[]
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
 }
 
 // In one to one the relationship is written in the optional model
