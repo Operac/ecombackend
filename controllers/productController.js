@@ -21,6 +21,7 @@ exports.createProduct = async (req, res) => {
       tags,
       newArrival,
       categoryid,
+      quantity,
     } = req.body;
 
     const parsedCategoryId = parseInt(categoryid);
@@ -28,6 +29,7 @@ exports.createProduct = async (req, res) => {
     const parsedRating = parseFloat(rating);
     const parsedDiscount = parseFloat(discount);
     const parsedOldPrice = parseFloat(oldPrice);
+    const parsedQuantity = parseInt(quantity) || 0;
     const parsedBestSelling = bestSelling === "true" || bestSelling === true;
     const parsedNewArrival = newArrival === "true" || newArrival === true;
 
@@ -76,6 +78,7 @@ exports.createProduct = async (req, res) => {
         newArrival: parsedNewArrival,
         categoryid: parsedCategoryId,
         image: imageUrl,
+        quantity: parsedQuantity,
       },
     });
 
@@ -184,6 +187,18 @@ exports.updateProduct = async (req, res) => {
     // Handle image upload if provided
     let updateData = { ...req.body };
     
+    // Parse quantity if it's there
+    if (updateData.quantity) {
+        updateData.quantity = parseInt(updateData.quantity);
+    }
+    
+    // Parse other numeric fields if they come as strings (common with FormData)
+    if (updateData.price) updateData.price = parseFloat(updateData.price);
+    if (updateData.rating) updateData.rating = parseFloat(updateData.rating);
+    if (updateData.discount) updateData.discount = parseFloat(updateData.discount);
+    if (updateData.oldPrice) updateData.oldPrice = parseFloat(updateData.oldPrice);
+    if (updateData.categoryid) updateData.categoryid = parseInt(updateData.categoryid);
+
     if (req.file && req.file.buffer) {
       const imageUrl = await uploadToCloudinary(req.file.buffer, "image", "Product");
       updateData.image = imageUrl;

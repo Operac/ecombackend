@@ -193,6 +193,22 @@ const response = await fetch(
       }))
     })
 
+    // DECREMENT STOCK
+    for (const item of userCart.ProductCart) {
+      try {
+        await prisma.product.update({
+          where: { id: item.Product.id },
+          data: {
+            quantity: {
+              decrement: item.quantity
+            }
+          }
+        });
+      } catch (err) {
+        console.error(`Failed to decrement stock for product ${item.Product.id}`, err);
+      }
+    }
+
     const updatedReciept = await prisma.receipt.findUnique({
       where: { orderId: order_id },
       include: { receiptItem: true }

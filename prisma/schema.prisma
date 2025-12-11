@@ -33,6 +33,7 @@ model Product {
   tags         String[]
   newArrival   Boolean
   categoryid   Int
+  quantity     Int          @default(0)
   
   category     Category     @relation(fields: [categoryid], references: [id])
   receiptItem  ReceiptItem[]
