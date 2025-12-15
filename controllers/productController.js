@@ -33,6 +33,27 @@ exports.createProduct = async (req, res) => {
     const parsedBestSelling = bestSelling === "true" || bestSelling === true;
     const parsedNewArrival = newArrival === "true" || newArrival === true;
 
+    // Helper to parse array fields
+    const parseArrayField = (field) => {
+        if (!field) return [];
+        if (Array.isArray(field)) return field;
+        if (typeof field === 'string') {
+            // Handle if it's a JSON string representation of an array
+            try {
+                const parsed = JSON.parse(field);
+                if (Array.isArray(parsed)) return parsed;
+            } catch (e) {
+                // Not JSON, continue to split by comma
+            }
+            return field.split(',').map(item => item.trim()).filter(Boolean);
+        }
+        return [];
+    };
+
+    const parsedSizes = parseArrayField(sizes);
+    const parsedColors = parseArrayField(colors);
+    const parsedTags = parseArrayField(tags);
+
     // Validate required fields
     const requiredFields = { name, description, price, currency, categoryid };
     for (let [key, value] of Object.entries(requiredFields)) {
@@ -67,14 +88,14 @@ exports.createProduct = async (req, res) => {
         currency,
         defaultSize,
         defaultColor,
-        sizes,
-        colors,
+        sizes: parsedSizes,
+        colors: parsedColors,
         bestSelling: parsedBestSelling,
         subcategory,
         rating: parsedRating,
         discount: parsedDiscount,
         oldPrice: parsedOldPrice,
-        tags,
+        tags: parsedTags,
         newArrival: parsedNewArrival,
         categoryid: parsedCategoryId,
         image: imageUrl,
