@@ -223,6 +223,15 @@ exports.updateProduct = async (req, res) => {
 
     // Remove file object from updateData if it exists
     delete updateData.file;
+    // Remove fields that should not be updated directly or are relations
+    delete updateData.id;
+    delete updateData.createdAt;
+    delete updateData.updatedAt;
+    delete updateData.category;
+    delete updateData.reviews;
+    delete updateData.receiptItem;
+    delete updateData.productCart;
+    delete updateData.Wishlist;
 
     // Update the product
     const updatedProduct = await prisma.product.update({
