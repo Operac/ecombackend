@@ -157,7 +157,8 @@ exports.getAllProducts = async (req, res) => {
             skip: skip,
             take: limit,
             include: {
-                category: true
+                category: true,
+                productImages: true
             },
             orderBy: { createdAt: 'desc' }
         })
@@ -204,6 +205,7 @@ exports.getSingleProduct = async (req, res) => {
     //find product
     const product = await prisma.product.findUnique({
       where: { id: parsedId },
+      include: { productImages: true }
     });
 
     if (!product) {
