@@ -551,7 +551,7 @@ productRouter.get("/getAllProducts", getAllProducts);
  *                   type: string
  *                   example: "Internal server error, please try again later!"
  */
-productRouter.put("/updateProduct/:id", isAdmin, uploads.single("image"), updateProduct);
+productRouter.put("/updateProduct/:id", isUser, isAdmin, uploads.single("image"), updateProduct);
 
 /**
  * @swagger
@@ -623,5 +623,5 @@ productRouter.put("/updateProduct/:id", isAdmin, uploads.single("image"), update
  *                   type: string
  *                   example: "Internal server error, please try again later!"
  */
-productRouter.delete("/deleteProduct/:id", isAdmin, deleteProduct);
+productRouter.delete("/deleteProduct/:id", isUser, isAdmin, deleteProduct);
 module.exports = productRouter;
