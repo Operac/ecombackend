@@ -41,6 +41,18 @@ model Product {
   Wishlist     Wishlist[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  reviews      Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 model User {
@@ -62,6 +74,7 @@ model User {
   uuid String @unique @default(uuid()) @db.Uuid
   Cart      Cart?
   Wishlist  Wishlist[]
+  reviews   Review[]
 }
 
 model Wishlist {

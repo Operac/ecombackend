@@ -39,6 +39,7 @@ app.use("/", paymentRouter);
 app.use("/", wishlistRouter);
 app.use("/", subcategoryRouter);
 app.use("/", tagRouter);
+app.use("/", require("./routers/reviewRouter"));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 const port = process.env.PORT || 5000;
