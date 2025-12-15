@@ -1,4 +1,5 @@
-const prisma = require("../prisma/client");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 console.log("SubcategoryController: Imported prisma. Has subcategory?", !!prisma.subcategory);
 
 // CREATE

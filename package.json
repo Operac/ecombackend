@@ -21,7 +21,8 @@
     "format": "prettier --write .",
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.js",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
