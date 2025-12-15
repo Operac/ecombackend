@@ -38,7 +38,6 @@ exports.createProduct = async (req, res) => {
         if (!field) return [];
         if (Array.isArray(field)) return field;
         if (typeof field === 'string') {
-            // Handle if it's a JSON string representation of an array
             try {
                 const parsed = JSON.parse(field);
                 if (Array.isArray(parsed)) return parsed;
@@ -75,9 +74,11 @@ exports.createProduct = async (req, res) => {
         .json({ success: false, message: "Product already exists!" });
     }
 
+    // Handle Main Image
     let imageUrl = null;
-    if (req.file && req.file.buffer) {
-      imageUrl = await uploadToCloudinary(req.file.buffer, "image", "Product");
+    const mainImageFile = req.files ? req.files.find(f => f.fieldname === 'image') : null;
+    if (mainImageFile && mainImageFile.buffer) {
+      imageUrl = await uploadToCloudinary(mainImageFile.buffer, "image", "Product");
     }
 
     const newProduct = await prisma.product.create({
@@ -102,6 +103,27 @@ exports.createProduct = async (req, res) => {
         quantity: parsedQuantity,
       },
     });
+
+    // Handle Color Variant Images
+    if (req.files && req.files.length > 0) {
+        const variantPromises = req.files
+            .filter(f => f.fieldname.startsWith('variant_image_'))
+            .map(async (file) => {
+                const colorName = file.fieldname.replace('variant_image_', '');
+                if (colorName) {
+                    const variantUrl = await uploadToCloudinary(file.buffer, "image", "Product/Variants");
+                    return prisma.productImage.create({
+                        data: {
+                            productId: newProduct.id,
+                            url: variantUrl,
+                            color: colorName
+                        }
+                    });
+                }
+            });
+        
+        await Promise.all(variantPromises);
+    }
 
     return res.status(201).json({
       success: true,

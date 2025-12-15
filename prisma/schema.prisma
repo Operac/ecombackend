@@ -42,6 +42,15 @@ model Product {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   reviews      Review[]
+  productImages ProductImage[]
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  color     String?
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
 }
 
 model Review {

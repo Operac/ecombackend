@@ -186,7 +186,7 @@ const productRouter = express.Router();
  *                   type: string
  *                   example: "Error message"
  */
-productRouter.post("/createProduct", isUser, isAdmin, uploads.single("image"), createProduct);
+productRouter.post("/createProduct", isUser, isAdmin, uploads.any(), createProduct);
 
 /**
  * @swagger
