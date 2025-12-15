@@ -1,4 +1,5 @@
 const prisma = require("../prisma/client");
+console.log("SubcategoryController: Imported prisma. Has subcategory?", !!prisma.subcategory);
 
 // CREATE
 exports.createSubcategory = async (req, res) => {
