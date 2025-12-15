@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 const createReview = async (req, res) => {
     try {
         const { rating, comment, productId } = req.body;
-        const userId = req.user.id; // From auth middleware
+        const userId = req.user.userid; // From auth middleware
 
         if (!rating || !productId) {
             return res.status(400).json({ success: false, message: "Rating and Product ID are required" });
