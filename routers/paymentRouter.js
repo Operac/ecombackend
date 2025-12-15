@@ -1,7 +1,10 @@
 const express = require("express")
-const { initializePayment, verifyPayment, getUserReceipts } = require("../controllers/paymentController")
+const { initializePayment, verifyPayment, getUserReceipts, getAllReceipts, updateReceiptStatus } = require("../controllers/paymentController")
 const { isUser } = require("../middlewares/auth")
 const paymentRouter = express.Router()
+
+paymentRouter.get("/getAllReceipts", getAllReceipts);
+paymentRouter.put("/updateReceiptStatus/:id", updateReceiptStatus);
 
 /**
  * @swagger

@@ -249,3 +249,66 @@ exports.getUserReceipts = async (req, res) => {
     });
   }
 };
+
+exports.getAllReceipts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [totalReceipts, receipts] = await Promise.all([
+        prisma.receipt.count(),
+        prisma.receipt.findMany({
+            skip: skip,
+            take: limit,
+            include: { 
+                receiptItem: true 
+            },
+            orderBy: { createdAt: 'desc' }
+        })
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "All receipts retrieved successfully",
+      data: receipts,
+      pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalReceipts / limit),
+          totalItems: totalReceipts,
+          itemsPerPage: limit
+      }
+    });
+  } catch (error) {
+    console.error("Get all receipts error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve all receipts"
+    });
+  }
+};
+
+exports.updateReceiptStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const updatedReceipt = await prisma.receipt.update({
+      where: { id: Number(id) },
+      data: { status },
+      include: { receiptItem: true }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Receipt status updated successfully",
+      data: updatedReceipt
+    });
+  } catch (error) {
+    console.error("Update receipt status error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update receipt status"
+    });
+  }
+};

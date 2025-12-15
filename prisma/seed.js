@@ -1265,6 +1265,53 @@ async function main() {
     women: womenCategory.id,
     children: childrenCategory.id,
   };
+  
+  // 🏷️ Extract and Seed Tags & Subcategories
+  console.log('\n🏷️  Seeding Tags and Subcategories...');
+  const uniqueTags = new Set();
+  const subcategoryMap = new Map(); // key: "categoryName_subcategoryName" -> value: { name, categoryId }
+
+  for (const product of productsData.products) {
+    if (product.tags && Array.isArray(product.tags)) {
+      product.tags.forEach(tag => uniqueTags.add(tag));
+    }
+    if (product.subcategory && product.category) {
+      const catId = categoryMap[product.category];
+      if (catId) {
+        const key = `${product.category}_${product.subcategory}`;
+        subcategoryMap.set(key, { name: product.subcategory, categoryId: catId });
+      }
+    }
+  }
+
+  // Seed Tags
+  for (const tag of uniqueTags) {
+    await prisma.tag.upsert({
+      where: { name: tag },
+      update: {},
+      create: { name: tag },
+    });
+  }
+  console.log(`✅ Seeded ${uniqueTags.size} tags.`);
+
+  // Seed Subcategories
+  for (const sub of subcategoryMap.values()) {
+    // Check if exists manually to avoid unique constraint issues if composite unique not set
+    const existing = await prisma.subcategory.findFirst({
+        where: { name: sub.name, categoryId: sub.categoryId }
+    });
+    
+    if (!existing) {
+        await prisma.subcategory.create({
+            data: {
+                name: sub.name,
+                categoryId: sub.categoryId
+            }
+        });
+    }
+  }
+  console.log(`✅ Seeded ${subcategoryMap.size} subcategories.`);
+
 
   // Add products
   console.log('\n📦 Adding products...');

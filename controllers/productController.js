@@ -103,11 +103,22 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const allProducts = await prisma.product.findMany({
-      include: {
-        category: true
-      }
-    });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Separate count and findMany for pagination metadata
+    const [totalProducts, allProducts] = await Promise.all([
+        prisma.product.count(),
+        prisma.product.findMany({
+            skip: skip,
+            take: limit,
+            include: {
+                category: true
+            },
+            orderBy: { createdAt: 'desc' }
+        })
+    ]);
 
     const formattedProducts = allProducts.map(product => ({
       ...product,
@@ -118,6 +129,12 @@ exports.getAllProducts = async (req, res) => {
       success: true,
       message: "Products retrieved successfully!",
       data: formattedProducts,
+      pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalProducts / limit),
+          totalItems: totalProducts,
+          itemsPerPage: limit
+      }
     });
   } catch (error) {
     console.error("getAllProducts error:", error);
@@ -228,11 +245,13 @@ exports.updateProduct = async (req, res) => {
 };
 
 exports.deleteProduct = async (req, res) => {
-  const { name } = req.params;
+  const { id } = req.params;
+  const parsedId = parseInt(id);
+
   try {
-    // Check for existing product by name
-    const existingProduct = await prisma.product.findFirst({
-      where: { name: name },
+    // Check for existing product by id
+    const existingProduct = await prisma.product.findUnique({
+      where: { id: parsedId },
     });
 
     // Check if product exists
@@ -245,7 +264,7 @@ exports.deleteProduct = async (req, res) => {
 
     // Delete the product
     const deletedProduct = await prisma.product.delete({
-      where: { id: existingProduct.id },
+      where: { id: parsedId },
     });
 
     if (!deletedProduct) {

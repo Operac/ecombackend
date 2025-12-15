@@ -356,9 +356,67 @@ exports.verifyEmail = async (req, res) => {
             }
         });
 
+
         return res.status(200).json({ success: true, message: "Email verified successfully" });
     } catch (error) {
         console.error("Verification error:", error);
         return res.status(500).json({ success: false, message: "Server error during verification" });
+    }
+};
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const [totalUsers, users] = await Promise.all([
+            prisma.user.count(),
+            prisma.user.findMany({
+                skip: skip,
+                take: limit,
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                    phone: true,
+                    role: true,
+                    createdAt: true,
+                    isVerified: true
+                },
+                orderBy: { createdAt: 'desc' }
+            })
+        ]);
+        
+        return res.status(200).json({
+            success: true, 
+            message: "Users fetched successfully",
+            data: users,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalUsers / limit),
+                totalItems: totalUsers,
+                itemsPerPage: limit
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return res.status(500).json({ success: false, message: "Server error fetching users" });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        await prisma.user.delete({
+            where: { id: Number(id) }
+        });
+        
+        return res.status(200).json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        return res.status(500).json({ success: false, message: "Server error deleting user" });
     }
 };

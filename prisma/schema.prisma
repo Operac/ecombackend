@@ -102,9 +102,22 @@ model ProductCart {
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String @unique
-  products Product[]
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  products      Product[]
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id          Int      @id @default(autoincrement())
+  name        String   
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
 }
 
 model Receipt {

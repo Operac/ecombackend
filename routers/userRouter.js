@@ -1,7 +1,10 @@
 const express = require("express")
 const uploads = require("../middlewares/uploads")
-const { registerUser, loginUser, verifyEmail } = require("../controllers/userController")
+const { registerUser, loginUser, verifyEmail, getAllUsers, deleteUser } = require("../controllers/userController")
 const userRouter = express.Router()
+
+userRouter.get("/getAllUsers", getAllUsers);
+userRouter.delete("/deleteUser/:id", deleteUser);
 
 userRouter.get("/verify-email", verifyEmail);
 
