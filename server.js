@@ -23,7 +23,7 @@ app.use(
       "https://ecommerce-fashion-git-main-operacs-projects.vercel.app",
       "https://ecommerce-fashion.vercel.app"
     ],
-    methods: ["GET", "POST", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
     credentials: true
   })
 );
