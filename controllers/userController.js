@@ -226,7 +226,7 @@ exports.registerUser = async (req, res) => {
             }
         });
 
-        const verificationLink = `https://ecommerce-fashion-delta.vercel.app/verify-email?token=${verificationToken}`;
+        const verificationLink = `https://ecommerce-fashion-git-main-operacs-projects.vercel.app/verify-email?token=${verificationToken}`;
         console.log("Verification Link:", verificationLink);
         try {
             await sendVerification(newUser.email, verificationLink);

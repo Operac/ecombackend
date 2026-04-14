@@ -43,7 +43,7 @@ exports.initializePayment = async (req, res) => {
       amount: totalPrice,
       currency: "NGN",
       redirect_url:
-        process.env.FRONTEND_URL,
+        "https://ecommerce-fashion-git-main-operacs-projects.vercel.app/verifypayment",
       // redirect_url: 'https://your-app.com/payment-success', always remember to change
 
       customer: {
