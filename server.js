@@ -21,7 +21,8 @@ app.use(
       "http://localhost:5173",
       "https://ecommerce-fashion-delta.vercel.app",
       "https://ecommerce-fashion-git-main-operacs-projects.vercel.app",
-      "https://ecommerce-fashion.vercel.app"
+      "https://ecommerce-fashion.vercel.app",
+      "https://ecommerce-fashion-xi.vercel.app"
     ],
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
     credentials: true
